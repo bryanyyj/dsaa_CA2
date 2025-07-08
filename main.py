@@ -1,3 +1,5 @@
+# Joel's directory: cd C:\Users\Joelc\OneDrive\Desktop\MAIN\SCHOOL\dsaa_CA2
+
 from features.construct_panel import run_construct_panel
 from features.restore_panel import run_restore_panel
 
