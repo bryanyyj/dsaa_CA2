@@ -2,6 +2,8 @@
 
 from features.construct_panel import run_construct_panel
 from features.restore_panel import run_restore_panel
+# new
+from trie.trie import Trie
 
 def display_menu():
     print("""
@@ -15,13 +17,15 @@ Group: Bryan & Joel     Class: DAAA/01
 """)
 
 def main():
+    # new 
+    trie = Trie()
     while True:
         display_menu()
         choice = input("Select an option: ")
         if choice == '1':
-            run_construct_panel()
+            run_construct_panel(trie)
         elif choice == '2':
-            run_restore_panel()
+            run_restore_panel(trie)
         elif choice == '3':
             print("Extra Feature 1")
         elif choice == '4':
