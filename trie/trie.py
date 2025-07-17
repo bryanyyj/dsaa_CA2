@@ -3,6 +3,7 @@
 # 2. added restore_best_match
 
 from trie.trie_node import TrieNode
+from typing import List
 
 class Trie:
     def __init__(self):
@@ -53,6 +54,7 @@ class Trie:
     def clear(self):
         self.root = TrieNode("")
 
+
     def get_word_frequency(self, word):
         """Get frequency of a word (0 if not found)"""
         node = self.root
@@ -96,3 +98,18 @@ class Trie:
             best_match = max(matches, key=lambda match: self.get_word_frequency(match))
             return best_match
         return None
+    
+
+    ## Bryan's Option 1 
+    def get_keywords(self) -> List[str]:
+        """Return a list of all terminal (complete) keywords in the trie."""
+        result = []
+
+        def dfs(node, prefix):
+            if node.is_terminal:
+                result.append(prefix)
+            for char, child in node.children.items():
+                dfs(child, prefix + char)
+
+        dfs(self.root, "")
+        return result

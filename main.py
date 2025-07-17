@@ -8,23 +8,12 @@
 """
 
 from features.construct_panel import run_construct_panel
-from features.restore_panel import run_restore_panel # new
+from features.restore_panel import run_restore_panel
+from features.bryan1 import run_feature_bryan1
+#from features.bryan2 import run_feature_bryan2
 from trie.trie import Trie
 
 def display_menu():
-    """
-    Please select your choice ('1','2','3','4','5','6','7'):
-    1. Construct/Edit Trie
-    2. Predict/Restore Text
-    =======================================================
-    3. Extra Feature One (Bryan):
-    4. Extra Feature Two (Bryan):
-    =======================================================
-    5. Extra Feature One (Joel):
-    6. Extra Feature Two (Joel):
-    =======================================================
-    7. Exit
-    """
     print("""
 ==== Heatherthorn Post Restoration ====
 Group: Bryan & Joel
@@ -40,7 +29,6 @@ Class: DAAA/01
 """)
 
 def main():
-    # new 
     trie = Trie()
     while True:
         display_menu()
@@ -51,9 +39,9 @@ def main():
         elif choice == '2':
             run_restore_panel(trie)
         elif choice == '3':
-            print("Extra Feature 1")
-        elif choice == '4':
-            print("Extra Feature 2")
+            run_feature_bryan1(trie)
+        #elif choice == '4':
+            #run_feature_bryan2(trie)
         elif choice == '5':
             print("Extra Feature 3")
         elif choice == '6':
@@ -66,6 +54,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 # # Joel's directory: cd C:\Users\Joelc\OneDrive\Desktop\MAIN\SCHOOL\dsaa_CA2
 
