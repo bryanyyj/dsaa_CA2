@@ -7,6 +7,7 @@
 *********************************************************
 """
 
+from features.joel1 import run_joel1_feature
 from features.construct_panel import run_construct_panel
 from features.restore_panel import run_restore_panel
 from features.bryan1 import run_feature_bryan1
@@ -23,7 +24,7 @@ Class: DAAA/01
 2. Predict/Restore Text
 3. Extra Feature 1 (Bryan)
 4. Extra Feature 2 (Bryan)
-5. Extra Feature 3 (Joel)
+5. Extra Feature 3 (Joel - COntent-Aware Restoration)
 6. Extra Feature 4 (Joel)
 7. Exit
 """)
@@ -43,7 +44,7 @@ def main():
         #elif choice == '4':
             #run_feature_bryan2(trie)
         elif choice == '5':
-            print("Extra Feature 3")
+            run_joel1_feature(trie)
         elif choice == '6':
             print("Extra Feature 4")
         elif choice == '7':
