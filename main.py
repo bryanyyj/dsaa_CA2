@@ -10,8 +10,9 @@
 from features.construct_panel import run_construct_panel
 from features.restore_panel import run_restore_panel
 from features.bryan1 import run_feature_bryan1
-#from features.bryan2 import run_feature_bryan2
+from features.bryan2 import run_feature_bryan2
 from trie.trie import Trie
+
 
 def display_menu():
     print("""
@@ -40,8 +41,8 @@ def main():
             run_restore_panel(trie)
         elif choice == '3':
             run_feature_bryan1(trie)
-        #elif choice == '4':
-            #run_feature_bryan2(trie)
+        elif choice == '4':
+            run_feature_bryan2(trie)
         elif choice == '5':
             print("Extra Feature 3")
         elif choice == '6':
