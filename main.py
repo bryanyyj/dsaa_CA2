@@ -7,6 +7,7 @@
 *********************************************************
 """
 
+from features.joel2 import run_feature_joel2
 from features.joel1 import run_joel1_feature
 from features.construct_panel import run_construct_panel
 from features.restore_panel import run_restore_panel
@@ -25,8 +26,8 @@ Class: DAAA/01
 2. Predict/Restore Text
 3. Extra Feature 1 (Bryan)
 4. Extra Feature 2 (Bryan)
-5. Extra Feature 3 (Joel - COntent-Aware Restoration)
-6. Extra Feature 4 (Joel)
+5. Extra Feature 3 (Joel - First/Last Word Auto-Complete)
+6. Extra Feature 4 (Joel - Top N Frequent Words)
 7. Exit
 """)
 
@@ -47,7 +48,7 @@ def main():
         elif choice == '5':
             run_joel1_feature(trie)
         elif choice == '6':
-            print("Extra Feature 4")
+            run_feature_joel2(trie)
         elif choice == '7':
             print("Exiting...")
             break

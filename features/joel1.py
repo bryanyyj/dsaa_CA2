@@ -1,170 +1,64 @@
-# joel1.py - Context-Aware Wildcard Restoration Feature
+# features/joel1.py
 
-from features.construct_panel import load_stopwords_to_trie
-from trie.trie_utils import wildcard_match
-import string
+from trie.trie import Trie
 
-def context_aware_restore(trie, words, current_index, restored_words):
-    """
-    Replaces wildcard words with best match from the trie using context (previous/next words).
-    Handles full '*' and partial wildcards like l*ve, with casing and punctuation.
-    """
-    raw_word = words[current_index]
-    clean_word = raw_word.strip(string.punctuation)
-    suffix = raw_word[len(clean_word):] if len(clean_word) < len(raw_word) else ""
+def autocomplete_prefix(trie, prefix: str, limit=5):
+    """Returns up to `limit` words from the trie that start with the given prefix."""
+    results = []
 
-    prev_word = restored_words[current_index - 1] if current_index > 0 else None
-    next_word = words[current_index + 1] if current_index < len(words) - 1 else None
+    def dfs(node, path):
+        if len(results) >= limit:
+            return
+        if node.is_terminal:
+            results.append((path, node.frequency))
+        for char in sorted(node.children.keys()):
+            dfs(node.children[char], path + char)
 
-    # Match full wildcard "*" or partial pattern like "l*ve"
-    if clean_word == "*":
-        matches = wildcard_match(trie, "*")
-    else:
-        matches = wildcard_match(trie, clean_word.lower()) if "*" in clean_word else []
+    node = trie.root
+    for char in prefix:
+        if char in node.children:
+            node = node.children[char]
+        else:
+            return []  # prefix not found
 
-    if matches:
-        best_match, _ = matches[0]
+    dfs(node, prefix)
+    return sorted(results, key=lambda x: x[1], reverse=True)
 
-        # Capitalize if the original word was capitalized
-        if clean_word and clean_word[0].isupper():
-            best_match = best_match.capitalize()
+def run_joel1_feature(trie: Trie):
+    print("\n=== Extra Feature 3: First & Last Word Auto-Complete ===")
+    print("Type a partial sentence. This will suggest completions for the first and last words.")
 
-        restored_words.append(best_match + suffix)
-    else:
-        restored_words.append(raw_word)  # No match found, keep original
-
-    return restored_words
-
-def restore_line_best_matches_with_context(line, trie):
-    """
-    Restores all wildcard words in a line using the best match, applying simple context.
-    """
-    words = line.strip().split()
-    restored_words = []
-
-    for i, word in enumerate(words):
-        context_aware_restore(trie, words, i, restored_words)
-
-    return ' '.join(restored_words)
-
-def run_joel1_feature(trie):
-    print("=== Context-Aware Wildcard Restoration ===")
-
-    # Only load stopwords if trie is currently empty (to avoid overwriting added words)
     if not trie.get_keywords():
-        load_stopwords_to_trie(trie)
-        print("Stopwords loaded into empty trie.")
-    else:
-        print("Using existing trie (already has keywords).")
+        print("⚠️ Trie is empty. Please load or construct it first.")
+        return
 
     while True:
-        cmd = input("Command [@ to restore / \\ to exit]: ").strip()
-
-        if cmd == "@":
-            filename = input("Enter text filename to restore: ").strip()
-            try:
-                with open(filename, "r", encoding="utf-8") as f:
-                    lines = f.readlines()
-
-                print("\nRestored text using best matches (with context):")
-                for i, line in enumerate(lines, 1):
-                    restored_line = restore_line_best_matches_with_context(line, trie)
-                    print(f"Line {i}: {restored_line}")
-
-            except FileNotFoundError:
-                print(f"File '{filename}' not found.")
-            except Exception as e:
-                print(f"Error processing file: {e}")
-
-        elif cmd == "\\":
-            print("Returning to main menu...")
+        sentence = input("\nEnter a sentence (or '\\' to return): ").strip()
+        if sentence == "\\":
             break
 
+        words = sentence.split()
+        if not words:
+            print("Please type something.")
+            continue
+
+        # First word suggestions
+        first_prefix = words[0]
+        print(f"\n🔍 Suggestions for first word '{first_prefix}':")
+        first_suggestions = autocomplete_prefix(trie, first_prefix)
+        if first_suggestions:
+            for word, freq in first_suggestions:
+                print(f" - {word} (frequency: {freq})")
         else:
-            print("Invalid command. Use '@' to restore or '\\' to exit.")
+            print("   😕 No suggestions found.")
 
-
-# # joel1.py - Context-Aware Wildcard Restoration Feature
-
-# from features.construct_panel import load_stopwords_to_trie
-# from trie.trie_utils import wildcard_match
-# import string
-
-# def context_aware_restore(trie, words, current_index, restored_words):
-#     import string
-
-#     raw_word = words[current_index]
-#     clean_word = raw_word.strip(string.punctuation)
-#     suffix = raw_word[len(clean_word):] if len(clean_word) < len(raw_word) else ""
-
-#     prev_word = restored_words[current_index - 1] if current_index > 0 else None
-#     next_word = words[current_index + 1] if current_index < len(words) - 1 else None
-
-#     # Match full wildcard *
-#     if clean_word == "*":
-#         matches = wildcard_match(trie, "*")
-#     else:
-#         matches = wildcard_match(trie, clean_word.lower()) if "*" in clean_word else []
-
-#     if matches:
-#         best_match, _ = matches[0]
-
-#         # Capitalize if original was capitalized
-#         if clean_word and clean_word[0].isupper():
-#             best_match = best_match.capitalize()
-
-#         # Optional: context scoring could be added here
-
-#         restored_words.append(best_match + suffix)
-#     else:
-#         restored_words.append(raw_word)
-
-#     return restored_words
-
-
-# def restore_line_best_matches_with_context(line, trie):
-#     """
-#     Restores a line by replacing '*' words with the highest frequency match,
-#     using context (previous/next words) to suggest the best word.
-#     """
-#     words = line.strip().split()
-#     restored_words = []
-
-#     for i, word in enumerate(words):
-#         context_aware_restore(trie, words, i, restored_words)
-
-#     return ' '.join(restored_words)
-
-# def run_joel1_feature(trie):
-#     print("=== Context-Aware Wildcard Restoration ===")
-
-#     if not trie.get_keywords():
-#         load_stopwords_to_trie(trie)
-#         print("Stopwords loaded into empty trie.")
-#     else:
-#         print("Using existing trie (already has keywords).")
-#     while True:
-#         cmd = input("Command [@ to restore / \\ to exit]: ").strip()
-
-#         if cmd == "@":
-#             filename = input("Enter text filename to restore: ").strip()
-#             try:
-#                 with open(filename, "r", encoding="utf-8") as f:
-#                     lines = f.readlines()
-
-#                 print("\nRestored text using best matches (with context):")
-#                 for i, line in enumerate(lines, 1):
-#                     restored_line = restore_line_best_matches_with_context(line, trie)
-#                     print(f"Line {i}: {restored_line}")
-
-#             except FileNotFoundError:
-#                 print(f"File '{filename}' not found.")
-#             except Exception as e:
-#                 print(f"Error processing file: {e}")
-
-#         elif cmd == "\\":
-#             print("Returning to main menu...")
-#             break
-
-#         else:
-#             print("Invalid command. Use '@' to restore or '\\' to exit.")
+        # Last word suggestions (only if more than 1 word)
+        last_prefix = words[-1]
+        if first_prefix != last_prefix:
+            print(f"\n🔍 Suggestions for last word '{last_prefix}':")
+            last_suggestions = autocomplete_prefix(trie, last_prefix)
+            if last_suggestions:
+                for word, freq in last_suggestions:
+                    print(f" - {word} (frequency: {freq})")
+            else:
+                print("   😕 No suggestions found.")
