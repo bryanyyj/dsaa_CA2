@@ -1,30 +1,59 @@
-# features/joel1.py
+# LATEST EDITED: 28/07/2025
 
 from trie.trie import Trie
 
 def autocomplete_prefix(trie, prefix: str, limit=5):
-    """Returns up to `limit` words from the trie that start with the given prefix."""
+    """
+    Returns up to `limit` words from the trie that start with the given prefix.
+    The results are sorted by frequency in descending order.
+    
+    Parameters:
+    - trie: The Trie instance that holds the words and their frequencies.
+    - prefix: The prefix to match words against.
+    - limit: The maximum number of words to return (default is 5).
+    
+    Returns:
+    - A list of tuples containing the matching words and their frequencies.
+    """
     results = []
 
     def dfs(node, path):
+        """
+        Performs a depth-first search (DFS) on the Trie to find matching words.
+        It adds words to the results if they are terminal nodes and within the limit.
+        
+        Parameters:
+        - node: The current TrieNode being visited.
+        - path: The current word being built from the Trie.
+        """
         if len(results) >= limit:
-            return
+            return  # Stop searching once we reach the limit
         if node.is_terminal:
-            results.append((path, node.frequency))
+            results.append((path, node.frequency))  # Add word and frequency
         for char in sorted(node.children.keys()):
             dfs(node.children[char], path + char)
 
     node = trie.root
+    # Traverse the trie based on the prefix
     for char in prefix:
         if char in node.children:
             node = node.children[char]
         else:
-            return []  # prefix not found
+            return []  # Return empty list if prefix is not found
 
     dfs(node, prefix)
+    # Return sorted results by frequency (descending order)
     return sorted(results, key=lambda x: x[1], reverse=True)
 
 def run_joel1_feature(trie: Trie):
+    """
+    Runs the First & Last Word Auto-Complete feature. The user is prompted to
+    input a sentence, and the function suggests completions for the first and 
+    last words based on the Trie data.
+    
+    Parameters:
+    - trie: The Trie instance containing the words for autocomplete.
+    """
     print("\n=== Extra Feature 3: First & Last Word Auto-Complete ===")
     print("Type a partial sentence. This will suggest completions for the first and last words.")
 
@@ -34,15 +63,17 @@ def run_joel1_feature(trie: Trie):
 
     while True:
         sentence = input("\nEnter a sentence (or '\\' to return): ").strip()
+
         if sentence == "\\":
             break
 
+        # Split the sentence into words and check if it's empty
         words = sentence.split()
         if not words:
-            print("Please type something.")
+            print("⚠️ Please type something.")
             continue
 
-        # First word suggestions
+        # Get the first word and suggest completions
         first_prefix = words[0]
         print(f"\n🔍 Suggestions for first word '{first_prefix}':")
         first_suggestions = autocomplete_prefix(trie, first_prefix)
@@ -50,9 +81,9 @@ def run_joel1_feature(trie: Trie):
             for word, freq in first_suggestions:
                 print(f" - {word} (frequency: {freq})")
         else:
-            print("   😕 No suggestions found.")
+            print("   😕 No suggestions found for the first word.")
 
-        # Last word suggestions (only if more than 1 word)
+        # Get the last word and suggest completions (only if more than one word is entered)
         last_prefix = words[-1]
         if first_prefix != last_prefix:
             print(f"\n🔍 Suggestions for last word '{last_prefix}':")
@@ -61,4 +92,4 @@ def run_joel1_feature(trie: Trie):
                 for word, freq in last_suggestions:
                     print(f" - {word} (frequency: {freq})")
             else:
-                print("   😕 No suggestions found.")
+                print("   😕 No suggestions found for the last word.")
