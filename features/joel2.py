@@ -1,3 +1,5 @@
+# edited by claude
+# Author: Joel Chua - Extra Feature 2: Top N Most Frequent Words
 # LATEST EDITED: 28/07/2025
 
 # features/joel2.py

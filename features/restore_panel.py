@@ -1,3 +1,5 @@
+# edited by claude
+# Author: Bryan Yeo & Joel Chua  
 # LATEST EDITED: 28/07/2025
 
 # Predict/Restore Text Command Menu

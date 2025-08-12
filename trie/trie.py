@@ -1,4 +1,6 @@
-# latest edited: 28/07/2025
+# edited by claude
+# Author: Bryan Yeo & Joel Chua
+# Latest edited: 28/07/2025
 
 from trie.trie_node import TrieNode
 from typing import List

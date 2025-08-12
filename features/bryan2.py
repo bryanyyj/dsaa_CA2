@@ -1,3 +1,6 @@
+# edited by claude
+# Author: Bryan Yeo - Extra Feature 2: Enhanced Pattern Search
+
 import re
 
 def parse_pattern(pattern: str) -> list:

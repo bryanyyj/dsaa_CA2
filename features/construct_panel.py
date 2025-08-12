@@ -1,3 +1,5 @@
+# edited by claude  
+# Author: Bryan Yeo & Joel Chua
 # LATEST EDITED: 28/07/2025
 from trie.trie import Trie
 from trie.trie_utils import load_keywords_from_file, write_keywords_to_file, write_keywords_from_trie
@@ -58,17 +60,70 @@ def load_stopwords_to_trie(trie, filepath="data/stopwordsFreq.txt"):
     except Exception as e:
         print(f"Error loading stopwords: {e}")
 
-# Function to display the Trie structure (sorted by frequency)
+# Function to display the Trie structure in the exact format specified in Appendix A  
 def display_trie(trie):
-    """Display the Trie structure with words and frequencies."""
-    def _display_node(node, word):
-        if node.is_terminal:
-            print(f"{word} (Frequency: {node.frequency})")  # Show words and their frequency
-        for child in node.children.values():
-            _display_node(child, word + child.char)  # Recursive call to traverse children
-
-    print("Trie structure:")
-    _display_node(trie.root, "")  # Start from the root node
+    """Display the Trie structure matching Appendix A format exactly."""
+    def _display_node(node, current_path, indent_level):
+        """Recursively build the trie display string"""
+        result = ""
+        children = sorted(node.children.items())  # Sort children alphabetically
+        
+        for char, child_node in children:
+            new_path = current_path + char
+            dots = ".." * indent_level
+            
+            # Add the character bracket
+            result += dots + "[" + char + "\n"
+            
+            # Simple logic: compress only single non-terminal chains
+            current_node = child_node
+            compressed_path = new_path
+            
+            # Compress consecutive single non-terminal children
+            while (len(current_node.children) == 1 and not current_node.is_terminal):
+                next_char, next_node = next(iter(current_node.children.items()))
+                compressed_path += next_char
+                current_node = next_node
+            
+            # Show compressed path if we compressed anything
+            if len(compressed_path) > len(new_path):
+                result += dots + ".." + "[" + compressed_path + "\n"
+                
+                # Show terminal word if current node is terminal
+                if current_node.is_terminal:
+                    result += dots + "..." + ">" + compressed_path + f"({current_node.frequency})*" + "\n"
+                
+                # Process any children recursively
+                if current_node.children:
+                    child_result = _display_node(current_node, compressed_path, indent_level + 2)
+                    result += child_result
+                
+                result += dots + ".." + "]" + "\n"
+            else:
+                # No compression - handle current node
+                if current_node.is_terminal:
+                    result += dots + ".." + ">" + new_path + f"({current_node.frequency})*" + "\n"
+                
+                # Process children
+                if current_node.children:
+                    child_result = _display_node(current_node, new_path, indent_level + 1)
+                    result += child_result
+            
+            result += dots + "]" + "\n"
+        
+        return result
+    
+    # Handle empty trie case
+    if not trie.root.children:
+        print("[]")
+        return
+    
+    # Build result matching Appendix A format exactly
+    result = "["
+    root_content = _display_node(trie.root, "", 0)
+    result += root_content.rstrip() + "\n]"
+    
+    print(result)
 
 # Function to handle all user commands in the construct/edit Trie panel
 def run_construct_panel(trie):
@@ -112,7 +167,7 @@ def run_construct_panel(trie):
                     trie.delete(word)  # Delete word from Trie
                     print(f"Deleted: {word}")
                 else:
-                    print(f"⚠️ '{word}' not found in trie.")
+                    print("Is not a keyword in trie")
             else:
                 print("⚠️ Please provide a keyword after '-'.")
         
@@ -121,10 +176,9 @@ def run_construct_panel(trie):
             word = cmd[1:].strip()
             if word:
                 if trie.search(word):
-                    freq = trie.get_word_frequency(word)  # Get frequency of the word
-                    print(f"Found: {word} (Frequency: {freq})")
+                    print(f'Keyword "{word}" is present')
                 else:
-                    print(f"⚠️ '{word}' not found.")
+                    print(f'Keyword "{word}" is not present')
             else:
                 print("⚠️ Please provide a keyword after '?'.")
         

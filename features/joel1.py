@@ -1,3 +1,5 @@
+# edited by claude
+# Author: Joel Chua - Extra Feature 1: First & Last Word Auto-Complete
 # LATEST EDITED: 28/07/2025
 
 from trie.trie import Trie

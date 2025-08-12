@@ -1,9 +1,10 @@
+# edited by claude
 """
 *********************************************************
 * ST1507 DSAA: Predictive Text Editor (using tries)    *
 *---------------------------------------------------------*
-* Done by: Bryan Yeo(2415518) & Joel Chua (2331704)        *
-* Class: DAAA/01                                      *
+* Done by: Bryan Yeo(2415518) & Joel Chua (2331704)     *
+* Class: DAAA/01                                         *
 *********************************************************
 """
 
@@ -17,17 +18,27 @@ from trie.trie import Trie
 
 
 def display_menu():
+    """Display the main menu according to assignment requirements format."""
     print("""
-==== Heatherthorn Post Restoration ====
-Group: Bryan & Joel
-Class: DAAA/01
+*********************************************************
+* ST1507 DSAA: Predictive Text Editor (using tries)    *
+*---------------------------------------------------------*
+*                                                       *
+* Done by: Bryan Yeo(2415518) & Joel Chua (2331704)     *
+* Class: DAAA/01                                         *
+*                                                       *
+*********************************************************
 
+Please select your choice ('1','2','3','4','5','6','7'):
 1. Construct/Edit Trie
 2. Predict/Restore Text
-3. Extra Feature 1 (Bryan)
-4. Extra Feature 2 (Bryan)
-5. Extra Feature 3 (Joel - First/Last Word Auto-Complete)
-6. Extra Feature 4 (Joel - Top N Frequent Words)
+--------------------------------------------------------
+3. Extra Feature One (Bryan Yeo):
+4. Extra Feature Two (Bryan Yeo):
+--------------------------------------------------------
+5. Extra Feature One (Joel Chua):
+6. Extra Feature Two (Joel Chua):
+--------------------------------------------------------
 7. Exit
 """)
 

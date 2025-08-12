@@ -1,3 +1,5 @@
+# edited by claude
+# Author: Bryan Yeo - Extra Feature 1: Typo Correction Suggestions
 # features/bryan1.py
 
 from trie.trie import Trie
