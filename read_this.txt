@@ -1,0 +1,86 @@
+Appendix A pt 2:
+
+ >+cat
+  >#
+  [
+  .[c
+  ..[ca
+  ...>cat(1)*
+  ..]
+  .]
+  ]
+
+appendix A pt 3:
+  >+car
+  >#
+  [
+  .[c
+  ..[ca
+  ...>cat(1)*
+  ...>car(1)*
+  ..]
+  .]
+  ]
+
+appendix A pt 4:
+  >+card
+  >#
+  [
+  .[c
+  ..[ca
+  ...>cat(1)*
+  ...[car(1)*
+  ....>card(1)*
+  ...]
+  ..]
+  .]
+  ]
+
+appendix A pt 5:
+  >+care
+  >#
+  [
+  .[c
+  ..[ca
+  ...>cat(1)*
+  ...[car(1)*
+  ....>card(1)*
+  ....>care(1)*
+  ...]
+  ..]
+  .]
+  ]
+
+  appendix A pt 6:
+  >+case
+  >#
+  [
+  .[c
+  ..[ca
+  ...>cat(1)*
+  ...[car(1)*
+  ....>card(1)*
+  ....>care(1)*
+  ...]
+  ...[cas
+  ....>case(1)*
+  ..]
+  .]
+  ]
+
+appendix A pt 7:
+  >+cat
+  >#
+  [
+  .[c
+  ..[ca
+  ...>cat(2)*
+  ...[car(1)*
+  ....>card(1)*
+  ....>care(1)*
+  ...]
+  ...[cas
+  ....>case(1)*
+  ..]
+  .]
+  ]

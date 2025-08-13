@@ -49,8 +49,10 @@ def run_restore_panel(trie):
 
         # Load stopwords into the Trie from a file
         if cmd == "~":
-            load_stopwords_to_trie(trie)
-            print("Loaded stopwords from data/stopwordsFreq.txt into Trie.")
+            filename = input("Please enter input file: ").strip()
+            if not filename:
+                filename = "data/stopwordsFreq.txt"  # Default filename
+            load_stopwords_to_trie(trie, filename)
 
         # Display the current Trie structure
         elif cmd == "#":
@@ -79,7 +81,7 @@ def run_restore_panel(trie):
             matches = wildcard_match(trie, pattern)
             if matches:
                 best_word, best_freq = matches[0]  # Best match is the first match
-                print(f"Best match for '{pattern}' is: {best_word} (frequency: {best_freq})")
+                print(f'Restored keyword "{best_word}"')
             else:
                 print(f"😕 No matches found for '{pattern}'.")
 
@@ -91,12 +93,24 @@ def run_restore_panel(trie):
                     lines = f.readlines()
                 
                 # Process each line and restore possible matches
-                for i, line in enumerate(lines, 1):
-                    print(f"\nLine {i}: {line.strip()}")
-                    restored_lines = restore_line_all_matches(line, trie)
-                    print("Possible restorations:")
-                    for restored in restored_lines:
-                        print(restored)
+                restored_content = []
+                for line in lines:
+                    restored_line = restore_line_all_matches(line, trie)
+                    restored_content.append(restored_line)
+                    print(restored_line)
+
+                # Ask if user wants to save the restored content
+                save_choice = input("Please enter output file (or press Enter to skip): ").strip()
+                if save_choice:
+                    try:
+                        with open(save_choice, "w", encoding="utf-8") as f:
+                            for line in restored_content:
+                                f.write(line + "\n")
+                        print(f"Restored text saved to {save_choice}")
+                    except Exception as e:
+                        print(f"⚠️ Error saving file: {e}")
+                else:
+                    print("File not saved.")
 
             except FileNotFoundError:
                 print(f"⚠️ File {filename} not found.")
@@ -110,10 +124,25 @@ def run_restore_panel(trie):
                 with open(filename, "r", encoding="utf-8") as f:
                     lines = f.readlines()
 
-                print("\nRestored text using best matches:")
-                for i, line in enumerate(lines, 1):
+                # Process and display restored content
+                restored_content = []
+                for line in lines:
                     restored_line = restore_line_best_matches(line, trie)
-                    print(f"Line {i}: {restored_line}")
+                    restored_content.append(restored_line)
+                    print(restored_line)
+
+                # Ask if user wants to save the restored content
+                save_choice = input("Please enter output file (or press Enter to skip): ").strip()
+                if save_choice:
+                    try:
+                        with open(save_choice, "w", encoding="utf-8") as f:
+                            for line in restored_content:
+                                f.write(line + "\n")
+                        print(f"Restored text saved to {save_choice}")
+                    except Exception as e:
+                        print(f"⚠️ Error saving file: {e}")
+                else:
+                    print("File not saved.")
 
             except FileNotFoundError:
                 print(f"⚠️ File {filename} not found.")

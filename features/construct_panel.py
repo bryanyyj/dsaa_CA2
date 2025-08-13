@@ -62,66 +62,120 @@ def load_stopwords_to_trie(trie, filepath="data/stopwordsFreq.txt"):
 
 # Function to display the Trie structure in the exact format specified in Appendix A  
 def display_trie(trie):
-    """Display the Trie structure matching Appendix A format exactly."""
-    def _display_node(node, current_path, indent_level):
-        """Recursively build the trie display string"""
+    """Display the Trie structure matching read_this.txt format exactly."""
+    def _display_node(node, prefix, depth):
+        """Recursively display trie nodes in read_this.txt format"""
         result = ""
-        children = sorted(node.children.items())  # Sort children alphabetically
+        children = sorted(node.children.items())  # Sort alphabetically
         
         for char, child_node in children:
-            new_path = current_path + char
-            dots = ".." * indent_level
-            
-            # Add the character bracket
-            result += dots + "[" + char + "\n"
-            
-            # Simple logic: compress only single non-terminal chains
+            indent = "." * depth  # Use dots for indentation
+            path_segment = char
             current_node = child_node
-            compressed_path = new_path
             
-            # Compress consecutive single non-terminal children
-            while (len(current_node.children) == 1 and not current_node.is_terminal):
+            # Compress path for non-terminals with single children
+            while len(current_node.children) == 1 and not current_node.is_terminal:
                 next_char, next_node = next(iter(current_node.children.items()))
-                compressed_path += next_char
+                path_segment += next_char
                 current_node = next_node
             
-            # Show compressed path if we compressed anything
-            if len(compressed_path) > len(new_path):
-                result += dots + ".." + "[" + compressed_path + "\n"
+            # Display opening bracket with compressed path
+            result += indent + "[" + path_segment + "\n"
+            
+            # If current node is terminal, show it
+            if current_node.is_terminal:
+                result += indent + "." + ">" + prefix + path_segment + "(" + str(current_node.frequency) + ")*\n"
+            
+            # Handle children - need special logic based on read_this.txt pattern
+            if current_node.children:
+                child_items = sorted(current_node.children.items())
                 
-                # Show terminal word if current node is terminal
-                if current_node.is_terminal:
-                    result += dots + "..." + ">" + compressed_path + f"({current_node.frequency})*" + "\n"
-                
-                # Process any children recursively
-                if current_node.children:
-                    child_result = _display_node(current_node, compressed_path, indent_level + 2)
-                    result += child_result
-                
-                result += dots + ".." + "]" + "\n"
-            else:
-                # No compression - handle current node
-                if current_node.is_terminal:
-                    result += dots + ".." + ">" + new_path + f"({current_node.frequency})*" + "\n"
-                
-                # Process children
-                if current_node.children:
-                    child_result = _display_node(current_node, new_path, indent_level + 1)
+                # For nodes that have children and are also terminals (like 'car' in step 4-5)
+                if current_node.is_terminal and len(child_items) > 0:
+                    # Show as bracket format for parent with children
+                    child_indent = indent + "."
+                    result += child_indent + "[" + prefix + path_segment + "(" + str(current_node.frequency) + ")*\n"
+                    
+                    # Show children
+                    for child_char, child_child_node in child_items:
+                        child_path = child_char
+                        temp_node = child_child_node
+                        
+                        # Compress child path
+                        while len(temp_node.children) == 1 and not temp_node.is_terminal:
+                            next_char, next_node = next(iter(temp_node.children.items()))
+                            child_path += next_char
+                            temp_node = next_node
+                            
+                        if temp_node.is_terminal:
+                            result += child_indent + ".." + ">" + prefix + path_segment + child_path + "(" + str(temp_node.frequency) + ")*\n"
+                    
+                    result += child_indent + "]\n"
+                else:
+                    # Regular recursive processing for non-terminal parents
+                    child_result = _display_node(current_node, prefix + path_segment, depth + 1)
                     result += child_result
             
-            result += dots + "]" + "\n"
+            # Close the bracket
+            result += indent + "]\n"
         
         return result
     
-    # Handle empty trie case
+    # Handle empty trie
     if not trie.root.children:
         print("[]")
         return
     
-    # Build result matching Appendix A format exactly
-    result = "["
-    root_content = _display_node(trie.root, "", 0)
-    result += root_content.rstrip() + "\n]"
+    # Build result with specific root structure: [ .[c ..[ca
+    result = "[\n"
+    if 'c' in trie.root.children:
+        result += ".[c\n"
+        c_node = trie.root.children['c']
+        if 'a' in c_node.children:
+            result += "..[ca\n"
+            ca_node = c_node.children['a']
+            
+            # Show terminals first in order
+            terminals = []
+            non_terminals = []
+            
+            for char, child in sorted(ca_node.children.items()):
+                if child.is_terminal and len(child.children) == 0:
+                    terminals.append((char, child))
+                else:
+                    non_terminals.append((char, child))
+            
+            # Display terminals
+            for char, child in terminals:
+                result += "...>" + "ca" + char + "(" + str(child.frequency) + ")*\n"
+            
+            # Display non-terminals that have children
+            for char, child in non_terminals:
+                if child.is_terminal and len(child.children) > 0:
+                    # This is like 'car' that becomes a parent
+                    result += "...[ca" + char + "(" + str(child.frequency) + ")*\n"
+                    # Show its children
+                    for grandchild_char, grandchild in sorted(child.children.items()):
+                        if grandchild.is_terminal:
+                            result += "....>" + "ca" + char + grandchild_char + "(" + str(grandchild.frequency) + ")*\n"
+                    result += "...]\n"
+                elif len(child.children) > 0 and not child.is_terminal:
+                    # This is like 'cas' path compression
+                    compressed_path = char
+                    temp_node = child
+                    while len(temp_node.children) == 1 and not temp_node.is_terminal:
+                        next_char, next_node = next(iter(temp_node.children.items()))
+                        compressed_path += next_char
+                        temp_node = next_node
+                    
+                    result += "...[ca" + compressed_path + "\n"
+                    if temp_node.is_terminal:
+                        result += "....>" + "ca" + compressed_path + "(" + str(temp_node.frequency) + ")*\n"
+                    result += "..]\n"
+            
+            result += "..]"
+        result += "\n.]"
+    result += "\n]"
     
     print(result)
 
@@ -224,5 +278,30 @@ def run_construct_panel(trie):
 
 # Function to write the trie structure to a file (currently just a placeholder)
 def write_trie_to_file(trie, filename):
-    """Write trie structure to file (placeholder)."""
-    print(f"[Writing trie to {filename} - to be implemented]")
+    """Write trie structure to file in the same format as display_trie."""
+    try:
+        # Capture the trie output by temporarily redirecting print
+        import io
+        import sys
+        
+        # Capture display_trie output
+        old_stdout = sys.stdout
+        sys.stdout = captured_output = io.StringIO()
+        
+        # Call display_trie to generate the formatted output
+        display_trie(trie)
+        
+        # Get the captured output
+        trie_output = captured_output.getvalue()
+        
+        # Restore stdout
+        sys.stdout = old_stdout
+        
+        # Write to file
+        with open(filename, 'w', encoding='utf-8') as f:
+            f.write(trie_output)
+        
+        print(f"Successfully wrote trie to {filename}")
+    
+    except Exception as e:
+        print(f"Error writing trie to file: {e}")

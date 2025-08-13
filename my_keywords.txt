@@ -1,4 +1,4 @@
-cat,1
+cat,2
 car,1
 card,1
 care,1

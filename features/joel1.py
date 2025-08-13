@@ -22,14 +22,12 @@ def autocomplete_prefix(trie, prefix: str, limit=5):
     def dfs(node, path):
         """
         Performs a depth-first search (DFS) on the Trie to find matching words.
-        It adds words to the results if they are terminal nodes and within the limit.
+        It adds words to the results if they are terminal nodes.
         
         Parameters:
         - node: The current TrieNode being visited.
         - path: The current word being built from the Trie.
         """
-        if len(results) >= limit:
-            return  # Stop searching once we reach the limit
         if node.is_terminal:
             results.append((path, node.frequency))  # Add word and frequency
         for char in sorted(node.children.keys()):
@@ -44,8 +42,8 @@ def autocomplete_prefix(trie, prefix: str, limit=5):
             return []  # Return empty list if prefix is not found
 
     dfs(node, prefix)
-    # Return sorted results by frequency (descending order)
-    return sorted(results, key=lambda x: x[1], reverse=True)
+    # Return sorted results by frequency (descending order) and limit to the requested number
+    return sorted(results, key=lambda x: x[1], reverse=True)[:limit]
 
 def run_joel1_feature(trie: Trie):
     """
